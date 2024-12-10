@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <title>添加事项示例</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 20px auto;
+        }
+        h1 {
+            text-align: center;
+        }
+        #new-item-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        #new-item-form input {
+            flex: 1;
+            padding: 8px;
+            font-size: 1em;
+        }
+        #new-item-form button {
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background: #f8f8f8;
+            padding: 10px;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .delete-btn {
+            background: #ff4c4c;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <h1>待办事项</h1>
+    <form id="new-item-form">
+        <input type="text" id="new-item-input" placeholder="输入新事项..." required />
+        <button type="submit">添加</button>
+    </form>
+    <ul id="item-list"></ul>
+
+    <script>
+        const form = document.getElementById('new-item-form');
+        const input = document.getElementById('new-item-input');
+        const itemList = document.getElementById('item-list');
+
+        // 从 localStorage 中读取已保存的事项列表
+        let items = JSON.parse(localStorage.getItem('myItems')) || [];
+
+        // 渲染事项列表函数
+        function renderItems() {
+            itemList.innerHTML = '';
+            items.forEach((item, index) => {
+                const li = document.createElement('li');
+                li.textContent = item;
+
+                // 创建删除按钮
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.textContent = '删除';
+                deleteBtn.addEventListener('click', () => {
+                    removeItem(index);
+                });
+
+                li.appendChild(deleteBtn);
+                itemList.appendChild(li);
+            });
+        }
+
+        // 添加新事项函数
+        function addItem(item) {
+            items.push(item);
+            saveItems();
+            renderItems();
+        }
+
+        // 删除事项函数
+        function removeItem(index) {
+            items.splice(index, 1);
+            saveItems();
+            renderItems();
+        }
+
+        // 保存事项到 localStorage
+        function saveItems() {
+            localStorage.setItem('myItems', JSON.stringify(items));
+        }
+
+        // 表单提交事件
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newItem = input.value.trim();
+            if (newItem !== '') {
+                addItem(newItem);
+                input.value = '';
+            }
+        });
+
+        // 页面加载时先渲染已保存的事项
+        renderItems();
+    </script>
+</body>
+</html>
